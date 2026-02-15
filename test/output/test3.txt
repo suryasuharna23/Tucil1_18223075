@@ -1,0 +1,8 @@
+#BBCC
+AB#CC
+DDBC#
+D#EEE
+DDE#E
+
+Waktu pencarian: 1 ms
+Jumlah kasus yang ditinjau: 359

@@ -7,29 +7,32 @@ def main():
     n = int(input("Masukkan n: "))
     filename = input("Masukkan nama file: ")
     with open(f"../test/input/{filename}.txt", 'r') as f:
-        content = f.read()
+        raw_content = f.read()
     
-    if n != len(content.strip().split('\n')):
+    raw_lines = raw_content.strip().split('\n')
+
+    if n != len(raw_lines):
         print("Input tidak sesuai dengan n, silakan cek lagi input")
         return
 
-    content = load_file(filename)
-    print(content)
-    print('\n')
+    vis_input = load_file(filename)
+    print(vis_input)
+    print("\n")
 
-    colored_area = getColorData(content)
+    colored_area = getColorData(raw_content)
 
     board = initial_board(n)
     utils.stats = 0
 
     start_time = time()
+    print("Lg nyari solusi")
     result = run_brute_force(board, 0, colored_area)
 
     end_time = time()
     durasi = end_time - start_time
     
     if result:
-        print_board(board, content, durasi, utils.stats)
+        print_board(board, raw_lines, durasi, utils.stats)
     else:
         print("Tidak ada solusi yang ditemukan.")
         print("Waktu pencarian: " + str(int(durasi * 1000)) + " ms")

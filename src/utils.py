@@ -11,9 +11,9 @@ def is_valid(board, row, col, colored_area):
 
     # Baris dan kolom
     for i in range(n):
-        if i != row:
+        if i != row and board[i][col] == 1:
             return False
-        if i != col:
+        if i != col and board[row][i] == 1:
             return False
     
     # Diagonal
@@ -31,26 +31,22 @@ def is_valid(board, row, col, colored_area):
                         return False
     
     # Area berwarna
-    for k in range(len(colored_area)):
-        area = colored_area[k]
-        jumlah_ratu = 0
-        for m in range(len(area)):
-            position = area[m]
-            b = position[0]
-            k = position[1]
-            if board[b][k] == 1:
-                jumlah_ratu = jumlah_ratu + 1
-        
-        my_position = False
-        for m in range(len(area)):
-            position = area[m]
-            if position[0] == row and position[1] == col:
-                my_position = True
-        
-        if my_position == True:
-            if jumlah_ratu > 1:
-                return False
+    my_area = None
+    for area in colored_area:
+        for pos in area:
+            if pos[0] == row and pos[1] == col:
+                my_area = area
+                break
+        if my_area: break
     
+    if my_area:
+        count = 0
+        for pos in my_area:
+            if board[pos[0]][pos[1]] == 1:
+                count += 1
+        if count > 1:
+            return False
+
     return True
 
 def getColorData(area):
@@ -143,6 +139,8 @@ def run_brute_force(board, row, area):
             for k in range(n):
                 if board[r][k] == 1:
                     c = k
+                    break
+            if c == -1: return False
             if is_valid(board, r, c, area)== False:
                 return False
         return True
@@ -154,21 +152,28 @@ def run_brute_force(board, row, area):
         board[row][col] = 0
     return False  
 
-def print_board(board, lines, durasi, jumlah_kasus):
+def print_board(board, raw_lines, durasi, jumlah_kasus):
     n = len(board)
     txt_res = ""
 
     for r in range(n):
         row_str = ""
-        str_original = lines[r].strip()
+
+        if r < len(raw_lines):
+            str_original = raw_lines[r].strip()
+        else:
+            str_original = ""*n
+
         for c in range(n):
             if board[r][c] == 1:
                 row_str = row_str + '#'
             else:
-                huruf = str_original[c]
-                row_str = row_str + huruf
+                if c < len(str_original):
+                    row_str += str_original[c]
+                else:
+                    row_str += "." # Fallback
         
-        txt_res = txt_res + row_str + "\n"
+        txt_res += row_str + "\n"
     
     waktu_pencarian = "Waktu pencarian: " + str(int(durasi * 1000)) + " ms\n"
     banyak_kasus = "Jumlah kasus yang ditinjau: " + str(jumlah_kasus) + "\n"
