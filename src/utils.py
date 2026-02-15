@@ -27,7 +27,7 @@ def is_valid(board, row, col, colored_area):
                     jarak_kolom = col - c
                     if jarak_kolom < 0:
                         jarak_kolom = -jarak_kolom
-                    if jarak_baris == jarak_kolom:
+                    if jarak_baris == 1 and jarak_kolom == 1:
                         return False
     
     # Area berwarna
@@ -49,7 +49,7 @@ def is_valid(board, row, col, colored_area):
 
     return True
 
-def getColorData(area):
+def data_color(area):
     rows = area.strip().split('\n')
     n = len(rows)
     areas = {}
@@ -171,7 +171,7 @@ def print_board(board, raw_lines, durasi, jumlah_kasus):
                 if c < len(str_original):
                     row_str += str_original[c]
                 else:
-                    row_str += "." # Fallback
+                    row_str += "."
         
         txt_res += row_str + "\n"
     

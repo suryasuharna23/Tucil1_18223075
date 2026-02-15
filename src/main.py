@@ -19,7 +19,7 @@ def main():
     print(vis_input)
     print("\n")
 
-    colored_area = getColorData(raw_content)
+    colored_area = data_color(raw_content)
 
     board = initial_board(n)
     utils.stats = 0
