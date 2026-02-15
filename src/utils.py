@@ -1,40 +1,57 @@
+stats = 0
+
 def initial_board(n):
     board = [[0 for i in range(n)] for j in range(n)]
     return board
 
-def isValid(board, row, col, colored_area):
-    # Check column and row
-    for i in range(len(board)):
-        if (board[row][i] == 1) and (i != col):
-            return False
-        if (board[i][col] == 1) and (i != row):
-            return False
+def is_valid(board, row, col, colored_area):
+    n = 0
+    for x in board:
+        n = n + 1
 
-    # Check diagonals
-    for i in range(len(board)):
-        if (board[i][j] == 1) and (abs(row - i) == abs(col - j)):
+    # Baris dan kolom
+    for i in range(n):
+        if i != row:
+            return False
+        if i != col:
             return False
     
-    for area in colored_area:
-        queen_in_area = sum(board[x][y] for x, y in area if 0 <= x < len(board) and 0 <= y < len(board))
-
-        if (row, col) in area and queen_in_area > 0:
-            return False
+    # Diagonal
+    for r in range(n):
+        for c in range(n):
+            if board[r][c] == 1:
+                if r != row or c != col:
+                    jarak_baris = row - r
+                    if jarak_baris < 0:
+                        jarak_baris = -jarak_baris
+                    jarak_kolom = col - c
+                    if jarak_kolom < 0:
+                        jarak_kolom = -jarak_kolom
+                    if jarak_baris == jarak_kolom:
+                        return False
+    
+    # Area berwarna
+    for k in range(len(colored_area)):
+        area = colored_area[k]
+        jumlah_ratu = 0
+        for m in range(len(area)):
+            position = area[m]
+            b = position[0]
+            k = position[1]
+            if board[b][k] == 1:
+                jumlah_ratu = jumlah_ratu + 1
+        
+        my_position = False
+        for m in range(len(area)):
+            position = area[m]
+            if position[0] == row and position[1] == col:
+                my_position = True
+        
+        if my_position == True:
+            if jumlah_ratu > 1:
+                return False
     
     return True
-
-def move(board, row, colored_area):
-    n = len(board)
-
-    if row >= n:
-        return True
-    for col in range(n):
-        if isValid(board, row, col, colored_area):
-            board[row][col] = 1
-            if move(board, row+1, colored_area):
-                return True
-            board[row][col] = 0
-    return False
 
 def getColorData(area):
     rows = area.strip().split('\n')
@@ -43,15 +60,19 @@ def getColorData(area):
 
     for i in range(n):
         rc = rows[i].strip() # rc = color in row i
+        
+        if not rc: continue
+        
         for j in range(len(rc)):
             color = rc[j]
-            if color not in areas:
-                areas[color] = []
-            areas[color].append((i,j))
+            if color.isalnum():
+                if color not in areas:
+                    areas[color] = []
+                areas[color].append((i,j))
 
-    return areas
+    return list(areas.values())
 
-def loadFile(filename):
+def load_file(filename):
     with open(f"../test/input/{filename}.txt", 'r') as f:
         content = f.read()
     
@@ -110,3 +131,57 @@ def loadFile(filename):
 
             r += selected + char + reset
     return r
+
+def run_brute_force(board, row, area):
+    global stats
+    n = len(board)
+
+    if row == n:
+        stats += 1
+        for r in range(n):
+            c = -1
+            for k in range(n):
+                if board[r][k] == 1:
+                    c = k
+            if is_valid(board, r, c, area)== False:
+                return False
+        return True
+
+    for col in range(n):
+        board[row][col] = 1
+        if run_brute_force(board, row + 1, area):
+            return True
+        board[row][col] = 0
+    return False  
+
+def print_board(board, lines, durasi, jumlah_kasus):
+    n = len(board)
+    txt_res = ""
+
+    for r in range(n):
+        row_str = ""
+        str_original = lines[r].strip()
+        for c in range(n):
+            if board[r][c] == 1:
+                row_str = row_str + '#'
+            else:
+                huruf = str_original[c]
+                row_str = row_str + huruf
+        
+        txt_res = txt_res + row_str + "\n"
+    
+    waktu_pencarian = "Waktu pencarian: " + str(int(durasi * 1000)) + " ms\n"
+    banyak_kasus = "Jumlah kasus yang ditinjau: " + str(jumlah_kasus) + "\n"
+
+    result = txt_res + "\n"+ waktu_pencarian + banyak_kasus
+
+    print(result)
+
+    save = input("Apakah Anda ingin menyimpan hasilnya? (y/n): ")
+    if save == 'y' or save == 'Y' or save == 'ya' or save == 'Ya':
+        filename = input("Masukkan nama file untuk menyimpan hasil: ")
+        with open(f"../test/output/{filename}.txt", 'w') as f:
+            f.write(result)
+        print("Berhasil disimpan")
+    else:
+        print("Hasil tidak disimpan")
