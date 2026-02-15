@@ -1,0 +1,9 @@
+A#ABBB
+AAA#BB
+CCCDD#
+#CCDDD
+EE#FFF
+EEEF#F
+
+Waktu pencarian: 53 ms
+Jumlah kasus yang ditinjau: 12761
