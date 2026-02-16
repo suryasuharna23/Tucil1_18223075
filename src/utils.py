@@ -1,4 +1,6 @@
+import time
 stats = 0
+last_print_time = 0
 
 def initial_board(n):
     board = [[0 for i in range(n)] for j in range(n)]
@@ -128,9 +130,12 @@ def load_file(filename):
             r += selected + char + reset
     return r
 
-def run_brute_force(board, row, area):
+def run_brute_force(board, row, area, raw_lines=None):
     global stats
     n = len(board)
+
+    if raw_lines is not None:
+        print_live(board, n, raw_lines)
 
     if row == n:
         stats += 1
@@ -147,7 +152,7 @@ def run_brute_force(board, row, area):
 
     for col in range(n):
         board[row][col] = 1
-        if run_brute_force(board, row + 1, area):
+        if run_brute_force(board, row + 1, area, raw_lines):
             return True
         board[row][col] = 0
     return False  
@@ -190,3 +195,37 @@ def print_board(board, raw_lines, durasi, jumlah_kasus):
         print("Berhasil disimpan")
     else:
         print("Hasil tidak disimpan")
+
+def print_live(board, n, raw_lines):
+    global last_print_time
+    
+    current_time = time.time()
+
+    if current_time - last_print_time < 0.3:
+        return
+
+    last_print_time = current_time
+
+    print("\033[H", end="")
+    
+    txt_res = ""
+    for r in range(n):
+        row_str = ""
+        if r < len(raw_lines):
+            str_original = raw_lines[r].strip()
+        else:
+            str_original = ""*n
+            
+        for c in range(n):
+            if board[r][c] == 1:
+                row_str = row_str + '#'
+            else:
+                if c < len(str_original):
+                    char = str_original[c]
+                else:
+                    char = "."
+                row_str += char + " "
+        txt_res += row_str + "\n"
+
+    print(txt_res)
+    print("coba kombinasi")

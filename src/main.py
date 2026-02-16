@@ -26,7 +26,8 @@ def main():
 
     start_time = time()
     print("Lg nyari solusi")
-    result = run_brute_force(board, 0, colored_area)
+    result = run_brute_force(board, 0, colored_area, raw_lines)
+    print_live(board, n, raw_lines)
 
     end_time = time()
     durasi = end_time - start_time
