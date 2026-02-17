@@ -63,6 +63,9 @@ class QueenLinkedIn:
         self.btn_save_img = tk.Button(self.frame_save_img, text="save image", command=self.save_image, width=15)
         self.btn_save_img.pack()
 
+        self.btn_close = tk.Button(self.frame_save_img, text="Close", command=self.window.destroy, width=15, fg="red")
+        self.btn_close.pack(pady=5)
+
         self.window.mainloop()
     
     def open_file(self):
@@ -85,31 +88,97 @@ class QueenLinkedIn:
         isi_text = f.read()
         f.close()
 
-        temp_data = isi_text.strip().split('\n')
-        jumlah_row = len(temp_data)
+        raw_lines = isi_text.split('\n')
+        temp_data = []
+        for line in raw_lines:
+            clean = line.strip()
+            if len(clean) > 0:
+                temp_data.append(clean)
 
-        if self.n != jumlah_row:
+        if len(temp_data) != self.n:
             self.label_status.config(text="error: jumlah baris pada file tidak sesuai dengan N!", fg="red")
             for widget in self.board_frame.winfo_children():
                 widget.destroy()
             self.data_file = []
             return
 
-        self.color_area = utils.data_color(isi_text)
+        color_groups = {}
+        
+        for r in range(self.n):
+            row_str = temp_data[r]
+            if len(row_str) != self.n:
+                self.label_status.config(text="error: panjang kolom baris " + str(r+1) + " tidak sesuai N", fg="red")
+                for widget in self.board_frame.winfo_children():
+                    widget.destroy()
+                self.data_file = []
+                return
 
-        if len(self.color_area) != self.n:
-            self.label_status.config(text="error: jumlah area warna tidak sama dengan N!", fg="red")
+            for c in range(self.n):
+                char = row_str[c]
+                if char.isalpha() == False:
+                    self.label_status.config(text="error: karakter harus huruf A-Z", fg="red")
+                    for widget in self.board_frame.winfo_children():
+                        widget.destroy()
+                    self.data_file = []
+                    return
+                
+                if char not in color_groups:
+                    color_groups[char] = []
+                color_groups[char].append((r, c))
+
+        if len(color_groups) != self.n:
+            self.label_status.config(text="error: jumlah warna harus sama dengan N", fg="red")
             for widget in self.board_frame.winfo_children():
                 widget.destroy()
             self.data_file = []
-            self.color_area = []
             return
+
+        for char in color_groups:
+            coords = color_groups[char]
+            if len(coords) == 0:
+                continue
             
+            start_node = coords[0]
+            queue = [start_node]
+            visited = []
+            visited.append(start_node)
+            count = 0
+            
+            while len(queue) > 0:
+                curr = queue.pop(0)
+                r = curr[0]
+                c = curr[1]
+                count += 1
+                
+                neighbors = [[-1, 0], [1, 0], [0, -1], [0, 1]]
+                for move in neighbors:
+                    nr = r + move[0]
+                    nc = c + move[1]
+                    
+                    if (nr, nc) in coords:
+                        is_visited = False
+                        for v in visited:
+                            if v == (nr, nc):
+                                is_visited = True
+                                break
+                        
+                        if is_visited == False:
+                            visited.append((nr, nc))
+                            queue.append((nr, nc))
+            
+            if count != len(coords):
+                self.label_status.config(text="error: area warna " + char + " terpisah", fg="red")
+                for widget in self.board_frame.winfo_children():
+                    widget.destroy()
+                self.data_file = []
+                return
+
+        self.color_area = utils.data_color(isi_text)
         self.data_file = temp_data
         self.solution_board = []
 
         self.board_ui()
-        self.label_status.config(text="file berhasil dibuka, silakan klik search untuk mencari solusi", fg="black")
+        self.label_status.config(text="file valid", fg="black")
         self.label_hasil.config(text="")
 
     def board_ui(self):
@@ -196,6 +265,7 @@ class QueenLinkedIn:
             self.solution_board = []
             self.label_status.config(text="Tidak ada solusi yang ditemukan.", fg="red")
             self.label_hasil.config(text="Waktu pencarian: " + str(self.durasi) + " ms")
+            self.label_hasil.config(text=self.label_hasil.cget("text") + "\nBanyak kasus yang ditinjau: " + str(utils.stats) + " kasus")
 
     def save_result(self):
         if self.solution_board == []:

@@ -1,0 +1,7 @@
+A#AA
+BBB#
+#CCC
+DD#D
+
+Waktu pencarian: 10 ms
+Banyak kasus yang ditinjau: 115 kasus

@@ -1,0 +1,8 @@
+#AABB
+AA#BC
+DDEE#
+D#EEC
+DDE#E
+
+Waktu pencarian: 14 ms
+Banyak kasus yang ditinjau: 359 kasus
