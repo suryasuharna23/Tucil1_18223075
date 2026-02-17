@@ -1,4 +1,5 @@
 import time
+import os
 stats = 0
 last_print_time = 0
 
@@ -206,7 +207,7 @@ def print_live(board, n, raw_lines):
 
     last_print_time = current_time
 
-    print("\033[H", end="")
+    os.system('cls' if os.name == 'nt' else 'clear')
     
     txt_res = ""
     for r in range(n):
@@ -218,7 +219,7 @@ def print_live(board, n, raw_lines):
             
         for c in range(n):
             if board[r][c] == 1:
-                row_str = row_str + '#'
+                row_str = row_str + '# '
             else:
                 if c < len(str_original):
                     char = str_original[c]
