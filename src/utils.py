@@ -1,5 +1,6 @@
 import time
 import os
+from PIL import Image, ImageDraw, ImageFont
 stats = 0
 last_print_time = 0
 
@@ -230,3 +231,57 @@ def print_live(board, n, raw_lines):
 
     print(txt_res)
     print("coba kombinasi")
+
+def save_image(board, raw_lines, filename, stats, duration):
+    n = len(board)
+    cell_size = 60
+    margin_bot = 100
+    width = n * cell_size
+    height = n * cell_size + margin_bot
+
+    img = Image.new('RGB', (width, height), color='white')
+    draw = ImageDraw.Draw(img)
+
+    color_palette = [
+        (255, 179, 186), (255, 223, 186), (255, 255, 186), (186, 255, 201), (186, 225, 255),
+        (230, 179, 255), (255, 179, 230), (212, 240, 240), (255, 198, 255), (189, 178, 255),
+        (160, 196, 255), (155, 246, 255), (202, 255, 191), (253, 255, 182), (255, 214, 165),
+        (255, 173, 173), (200, 200, 200), (240, 230, 140), (176, 224, 230), (144, 238, 144)
+    ]
+
+    for r in range(n):
+        if r < len(raw_lines):
+            str_original = raw_lines[r].strip()
+        else:
+            str_original = ""*n
+        
+        for c in range(n):
+            x0 = c * cell_size
+            y0 = r * cell_size
+            x1 = x0 + cell_size
+            y1 = y0 + cell_size
+
+            if c < len(str_original):
+                char = str_original[c]
+                color_idx = ord(char)%len(color_palette)
+                fill_color = color_palette[color_idx]
+            else:
+                fill_color = (255, 255, 255)
+            
+            draw.rectangle([x0, y0, x1, y1], fill=fill_color, outline='black', width=2)
+
+            if board[r][c] == 1:
+                padding = 10
+                draw.ellipse([x0 + padding, y0 + padding, x1 - padding, y1 - padding], fill='black')
+
+                text_x = x0 + (cell_size // 3)
+                text_y = y0 + (cell_size // 4)
+                draw.text((text_x, text_y), 'Q', fill='white')
+    text_x = 20
+    text_y = (n * cell_size) + 20
+    
+    text_info = f"Waktu: {int(duration * 1000)} ms\nKasus ditinjau: {stats}"
+    
+    draw.text((text_x, text_y), text_info, fill="black")
+
+    img.save(f"../test/output/image/{filename}.png")

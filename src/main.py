@@ -2,7 +2,6 @@ from utils import *
 import utils
 from time import time
 
-
 def main():
     n = int(input("Masukkan n: "))
     filename = input("Masukkan nama file: ")
@@ -25,7 +24,6 @@ def main():
     utils.stats = 0
 
     start_time = time()
-    print("Lg nyari solusi")
     result = run_brute_force(board, 0, colored_area, raw_lines)
     print_live(board, n, raw_lines)
 

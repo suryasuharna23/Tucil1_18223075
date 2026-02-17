@@ -57,6 +57,12 @@ class QueenLinkedIn:
         self.btn_save = tk.Button(self.frame_save, text="save", command=self.save_result, width=10)
         self.btn_save.pack(side=tk.LEFT, padx=5)
 
+        self.frame_save_img = tk.Frame(self.window)
+        self.frame_save_img.pack(pady=5)
+
+        self.btn_save_img = tk.Button(self.frame_save_img, text="save image", command=self.save_image, width=15)
+        self.btn_save_img.pack()
+
         self.window.mainloop()
     
     def open_file(self):
@@ -89,8 +95,17 @@ class QueenLinkedIn:
             self.data_file = []
             return
 
-        self.data_file = temp_data
         self.color_area = utils.data_color(isi_text)
+
+        if len(self.color_area) != self.n:
+            self.label_status.config(text="error: jumlah area warna tidak sama dengan N!", fg="red")
+            for widget in self.board_frame.winfo_children():
+                widget.destroy()
+            self.data_file = []
+            self.color_area = []
+            return
+            
+        self.data_file = temp_data
         self.solution_board = []
 
         self.board_ui()
@@ -217,6 +232,26 @@ class QueenLinkedIn:
         f.close()
         
         self.label_status.config(text="berhasil disimpan ke " + path, fg="green")
+
+    def save_image(self):
+        if self.solution_board == []:
+            self.label_status.config(text="error: belum ada solusi untuk disimpan", fg="red")
+            return
+
+        filename = self.input_filename.get()
+        if filename == "":
+            self.label_status.config(text="error: nama file tidak boleh kosong", fg="red")
+            return
+        
+        if filename.endswith(".txt"):
+            filename = filename.replace(".txt", "")
+
+        if filename.endswith(".png"):
+            filename = filename.replace(".png", "")
+            
+        utils.save_image(self.solution_board, self.data_file, filename, utils.stats, self.durasi /1000)
+        
+        self.label_status.config(text="berhasil disimpan gambar ke ../test/output/image/" + filename + ".png", fg="green")
 
 if __name__ == "__main__":
     app = QueenLinkedIn()
