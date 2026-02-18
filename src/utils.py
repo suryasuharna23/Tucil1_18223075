@@ -230,7 +230,6 @@ def print_live(board, n, raw_lines):
         txt_res += row_str + "\n"
 
     print(txt_res)
-    print("coba kombinasi")
 
 def save_image(board, raw_lines, filename, stats, duration):
     n = len(board)

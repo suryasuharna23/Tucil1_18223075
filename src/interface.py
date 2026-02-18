@@ -200,7 +200,7 @@ class QueenLinkedIn:
                 huruf = txt_row[j]
                 
                 if huruf.isalpha():
-                    color_idx = (ord(huruf.upper()) - 65) % 26
+                    color_idx = (ord(huruf.upper())-65) % 26
                 else:
                     color_idx = 0 
                 
@@ -208,7 +208,7 @@ class QueenLinkedIn:
 
                 block_box = tk.Label(self.board_frame, text="", width=4, height=2, bg=color_bg, borderwidth=1, relief="solid", font=("Arial", 12, "bold"))
 
-                block_box.grid(row=i, column=j)
+                block_box.grid(row=i,column=j)
                 block_row.append(block_box)
             self.block.append(block_row)
     
@@ -224,7 +224,7 @@ class QueenLinkedIn:
                     self.block[i][j].config(text="Q", fg="black")
                 else:
                     self.block[i][j].config(text="")
-        self.label_status.config(text="mencari solusi... langkah ke: " + str(utils.stats), fg="blue")
+        self.label_status.config(text="mencari solusi... langkah ke: " +str(utils.stats), fg="blue")
         self.window.update()
     
     def search(self):
